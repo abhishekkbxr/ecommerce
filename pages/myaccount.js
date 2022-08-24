@@ -1,9 +1,16 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
-function Myaccount() {
+function MyAccount() {
+    useEffect(() => {
+        if (!localStorage.getItem("token")) {
+            router.push('/')
+        }
+    }, [])
   return (
-    <div>Myaccount</div>
+    <div>
+      MyAccount
+    </div>
   )
 }
 
-export default Myaccount
+export default MyAccount
