@@ -3,7 +3,7 @@ import Link from "next/link";
 import { AiFillPlusCircle, AiFillMinusCircle } from "react-icons/ai";
 import { BsFillBagCheckFill } from "react-icons/bs";
 
-function Checkout({ cart, subTotal, addToCart, removeFromCart }) {
+function Checkout({ cart, subTotal, addToCart, removeFromCart  }) {
   const makePayment = async () => {
     console.log("here...");
     const res = await initializeRazorpay();

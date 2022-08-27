@@ -6,7 +6,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const Post = ({ buyNow, addToCart, product, varient }) => {
-  console.log(product, varient);
+  // console.log(product, varient);
   const router = useRouter();
   const { slug } = router.query;
 
@@ -370,6 +370,7 @@ export async function getServerSideProps(context) {
   let product = await Product.findOne({ category: "Tshirt" });
   let varient = await Product.find({ title: product.title });
   let colorSizeSlug = {};
+  console.log("colorSizeSlug" , colorSizeSlug)
 
   for (let item of varient) {
     if (Object.keys(colorSizeSlug).includes(item.color)) {

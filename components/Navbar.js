@@ -15,6 +15,7 @@ function Navbar({
   logout,
   Key,
   user,
+
   cart,
   addToCart,
   removeFromCart,
@@ -34,7 +35,7 @@ function Navbar({
   };
   return (
     <header className="text-gray-600 body-font">
-      <div className="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
+      <div className="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center ">
         <div className="logo mr-auto mx-5 md:mx-5 my-2 cursor-pointer">
           <Link href={"/"}>
             <a>
@@ -73,14 +74,13 @@ function Navbar({
               <MdOutlineAccountCircle className="text-2xl md:text-4xl" />
             )}
           </span>
-
-        <Link href={"/login"}>
-          <a>
-            <button className="bg-pink-500 px-2 py-1 rounded-md mx-2 my-1 text-white">
-              Login
-            </button>
-          </a>
-        </Link>
+          {!user.value && (
+            <Link href={"/login"}>
+              <a>
+                <button className="bg-pink-500 px-2 py-1 rounded-md mx-2 my-1 text-white" >login</button>
+              </a>
+            </Link>
+          )}
 
         <AiOutlineShoppingCart
           className="text-2xl md:text-4xl"
@@ -92,7 +92,7 @@ function Navbar({
 
       <div
         ref={ref}
-        className={` w-60 h-[100vh] sideCart overflow-y-scroll fixed right-0 top-0 p-8 px-6 bg-pink-100 transform transition-transform  "translate-x-full" `}
+        className={` w-60 h-[100vh] sideCart overflow-y-scroll fixed right-0 z-10 top-0 p-8 px-6 bg-pink-100 transform transition-transform  "translate-x-full" `}
       >
         {" "}
         <h2 className="font-bold text-xl text-center">shoping cart </h2>
@@ -110,7 +110,7 @@ function Navbar({
           {Object.keys(cart).map((k) => {
             return (
               <li key={k}>
-                <div className="item flex mx-3">
+                <div className="item flex mx-3 ">
                   <div className="w-2/3 font-semibold ">{cart[k].name}</div>
                   <div className="w-1/3 mx-0 font-semibold flex justify-center items-center text-lg ">
                     <AiFillPlusCircle

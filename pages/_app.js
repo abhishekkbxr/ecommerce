@@ -58,7 +58,7 @@ function MyApp({ Component, pageProps }) {
     }
 
     setCart(newCart);
-    console.log(newCart);
+    // console.log(newCart);
     saveCart(newCart);
   };
 
