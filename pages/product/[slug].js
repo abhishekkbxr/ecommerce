@@ -6,7 +6,6 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const Post = ({ buyNow, addToCart, product, varient }) => {
-  // console.log(product, varient);
   const router = useRouter();
   const { slug } = router.query;
 
@@ -48,8 +47,8 @@ const Post = ({ buyNow, addToCart, product, varient }) => {
   const [color, setColor] = useState(product.color);
   const [size, setSize] = useState(product.size);
 
-  const refreshVarient = (newsize, newcolor) => {
-    // console.log("v is ", varient, newsize, newcolor)
+  const refreshVarient = (newcolor, newsize) => {
+    console.log("v is ", varient, newsize, newcolor)
     let url = `${process.env.NEXT_PUBLIC_HOST}/product/${varient[newcolor][newsize]["slug"]}`;
     window.location = url;
   };
@@ -73,14 +72,14 @@ const Post = ({ buyNow, addToCart, product, varient }) => {
             <img
               alt="ecommerce"
               className="lg:w-1/2 w-full px-24 lg:h-auto h-64 object-cover object-top rounded"
-              src="https://m.media-amazon.com/images/I/71-dpoo-jFL._UX679_.jpg"
+              src={product.img}
             />
             <div className="lg:w-1/2 w-full lg:pl-10 lg:py-6 mt-6 lg:mt-0">
               <h2 className="text-sm title-font text-gray-500 tracking-widest">
                 MUFTI
               </h2>
               <h1 className="text-gray-900 text-3xl title-font font-medium mb-1">
-                wear the Tshirt
+              {product.title}({product.size}/{product.color})
               </h1>
               <div className="flex mb-4">
                 <span className="flex items-center">
@@ -189,94 +188,38 @@ const Post = ({ buyNow, addToCart, product, varient }) => {
                 cardigan.
               </p>
               <div className="flex mt-6 items-center pb-5 border-b-2 border-gray-100 mb-5">
+
+
+                {/*  color div  */}
+
                 <div className="flex">
                   <span className="mr-3">Color</span>
 
-                  {Object.keys(varient).includes("blue") &&
-                    Object.keys(varient["blue"]).includes(size) && (
-                      <button
-                        onClick={() => {
-                          refreshVarient(size, "blue");
-                        }}
-                        className={`border-2 ${
-                          color === "blue" ? "border-black" : "border-gray-300"
-                        } ml-1 bg-blue-700 rounded-full w-6 h-6 focus:outline-none`}
-                      ></button>
-                    )}
-                  {Object.keys(varient).includes("pink") &&
-                    Object.keys(varient["pink"]).includes(size) && (
-                      <button
-                        onClick={() => {
-                          refreshVarient(size, "pink");
-                        }}
-                        className={`border-2 ${
-                          color === "pink" ? "border-black" : "border-gray-300"
-                        } ml-1 bg-pink-500 rounded-full w-6 h-6 focus:outline-none`}
-                      ></button>
-                    )}
-                  {Object.keys(varient).includes("yellow") &&
-                    Object.keys(varient["yellow"]).includes(size) && (
-                      <button
-                        onClick={() => {
-                          refreshVarient(size, "yellow");
-                        }}
-                        className={`border-2 ${
-                          color === "yellow"
-                            ? "border-black"
-                            : "border-gray-300"
-                        } ml-1 bg-yellow-500 rounded-full w-6 h-6 focus:outline-none`}
-                      ></button>
-                    )}
-                  {Object.keys(varient).includes("red") &&
-                    Object.keys(varient["red"]).includes(size) && (
-                      <button
-                        onClick={() => {
-                          refreshVarient(size, "red");
-                        }}
-                        className={`border-2 ${
-                          color === "red" ? "border-black" : "border-gray-300"
-                        } ml-1 bg-red-500 rounded-full w-6 h-6 focus:outline-none`}
-                      ></button>
-                    )}
-                  {Object.keys(varient).includes("purple") &&
-                    Object.keys(varient["purple"]).includes(size) && (
-                      <button
-                        onClick={() => {
-                          refreshVarient(size, "purple");
-                        }}
-                        className={`border-2 ${
-                          color === "purple"
-                            ? "border-black"
-                            : "border-gray-300"
-                        } ml-1 bg-purple-500 rounded-full w-6 h-6 focus:outline-none`}
-                      ></button>
-                    )}
+                  {Object.keys(varient).includes("blue") && Object.keys(varient["blue"]).includes(size) && (<button onClick={() => { refreshVarient("blue", size) }} className={`border-2 ${color === "blue" ? "border-black" : "border-gray-300"} ml-1 bg-blue-700 rounded-full w-6 h-6 focus:outline-none`} ></button>)}
+                  {Object.keys(varient).includes("pink") && Object.keys(varient["pink"]).includes(size) && (<button onClick={() => { refreshVarient("pink", size) }} className={`border-2 ${color === "pink" ? "border-black" : "border-gray-300"} ml-1 bg-pink-700 rounded-full w-6 h-6 focus:outline-none`} ></button>)}
+                  {Object.keys(varient).includes("yellow") && Object.keys(varient["yellow"]).includes(size) && (<button onClick={() => { refreshVarient("yellow", size) }} className={`border-2 ${color === "yellow" ? "border-black" : "border-gray-300"} ml-1 bg-yellow-700 rounded-full w-6 h-6 focus:outline-none`} ></button>)}
+                  {Object.keys(varient).includes("red") && Object.keys(varient["red"]).includes(size) && (<button onClick={() => { refreshVarient("red", size) }} className={`border-2 ${color === "red" ? "border-black" : "border-gray-300"} ml-1 bg-red-700 rounded-full w-6 h-6 focus:outline-none`} ></button>)}
+                  {Object.keys(varient).includes("purple") && Object.keys(varient["purple"]).includes(size) && (<button onClick={() => { refreshVarient("purple", size) }} className={`border-2 ${color === "purple" ? "border-black" : "border-gray-300"} ml-1 bg-purple-700 rounded-full w-6 h-6 focus:outline-none`} ></button>)}
+
                 </div>
+
+                {/* size div  */}
+
                 <div className="flex ml-6 items-center">
                   <span className="mr-3">Size</span>
                   <div className="relative">
                     <select
                       value={size}
                       onChange={(e) => {
-                        refreshVarient(e.target.value, color);
+                        refreshVarient(color ,e.target.value);
                       }}
                       className="rounded border appearance-none border-gray-300 py-2 focus:outline-none focus:ring-2 focus:ring-pink-200 focus:border-pink-500 text-base pl-3 pr-10"
                     >
-                      {Object.keys(varient[color]).includes("S") && (
-                        <option value="S">S</option>
-                      )}
-                      {Object.keys(varient[color]).includes("M") && (
-                        <option value="M">M</option>
-                      )}
-                      {Object.keys(varient[color]).includes("L") && (
-                        <option value="L">L</option>
-                      )}
-                      {Object.keys(varient[color]).includes("XL") && (
-                        <option value="XL">XL</option>
-                      )}
-                      {Object.keys(varient[color]).includes("XXL") && (
-                        <option value="XXL">XXL</option>
-                      )}
+                      {Object.keys(varient[color]).includes("S") && <option value={"S"}>S</option>}
+                      {Object.keys(varient[color]).includes("M") && <option value={"M"}>M</option>}
+                      {Object.keys(varient[color]).includes("L") && <option value={"L"}>L</option>}
+                      {Object.keys(varient[color]).includes("XL") && <option value={"XL"}>XL</option>}
+                      {Object.keys(varient[color]).includes("XXL") && <option value={"XXL"}>XXL</option>}
                     </select>
                     <span className="absolute right-0 top-0 h-full w-10 text-center text-gray-600 pointer-events-none flex items-center justify-center">
                       <svg
@@ -367,17 +310,17 @@ export async function getServerSideProps(context) {
       console.log("connected");
     });
   }
-  let product = await Product.findOne({ category: "Tshirt" });
-  let varient = await Product.find({ title: product.title });
-  let colorSizeSlug = {};
-  console.log("colorSizeSlug" , colorSizeSlug)
+  let product = await Product.findOne({ slug: context.query.slug })
+  let varient = await Product.find({ title: product.title })
 
+  let colorSizeSlug = {}
   for (let item of varient) {
     if (Object.keys(colorSizeSlug).includes(item.color)) {
-      colorSizeSlug[item.color][item.size] = { slug: item.slug };
-    } else {
-      colorSizeSlug[item.color] = {};
-      colorSizeSlug[item.color][item.size] = { slug: item.slug };
+      colorSizeSlug[item.color][item.size] = { slug: item.slug }
+    }
+    else {
+      colorSizeSlug[item.color] = {}
+      colorSizeSlug[item.color][item.size] = { slug: item.slug }
     }
   }
 

@@ -111,7 +111,7 @@ function Navbar({
             return (
               <li key={k}>
                 <div className="item flex mx-3 ">
-                  <div className="w-2/3 font-semibold ">{cart[k].name}</div>
+                  <div className="w-2/3 font-semibold ">{cart[k].name}({cart[k].size}/{cart[k].varient})</div>
                   <div className="w-1/3 mx-0 font-semibold flex justify-center items-center text-lg ">
                     <AiFillPlusCircle
                       onClick={() => {

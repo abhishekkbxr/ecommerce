@@ -17,7 +17,7 @@ function MyApp({ Component, pageProps }) {
 
   useEffect(() => {
     router.events.on("routeChangeStart", () => {
-      setProgress(100);
+      setProgress(20);
     });
     router.events.on("routeChangeComplete", () => {
       setProgress(100);
@@ -35,8 +35,8 @@ function MyApp({ Component, pageProps }) {
     let token = localStorage.getItem("token");
     if (token) {
       setUser({ value: token });
-      setKey(Math.random());
     }
+    setKey(Math.random());
   }, [router.query]);
 
   const saveCart = (myCart) => {
@@ -97,6 +97,12 @@ function MyApp({ Component, pageProps }) {
 
   return (
     <>
+      <LoadingBar
+        color="#ff2d55"
+        progress={progress}
+        waitingTime={500}
+        onLoaderFinished={() => setProgress(0)}
+      />
       <Navbar
         cart={cart}
         addToCart={addToCart}
