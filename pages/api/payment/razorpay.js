@@ -1,9 +1,9 @@
+import connectDb from "../../../middleware/mongoose";
 import { parse } from "postcss";
-
 const Razorpay = require("razorpay");
 const shortid = require("shortid");
 
-export default async function handler(req, res) {
+const handler = async (req, res) => {
   if (req.method === "POST") {
     // Initialize razorpay object
     const razorpay = new Razorpay({
@@ -17,7 +17,7 @@ export default async function handler(req, res) {
     const amount = req.body.subTotal;
     const currency = "INR";
     const options = {
-      amount: (amount * 100),
+      amount: amount * 100,
       currency,
       receipt: shortid.generate(),
       payment_capture,
@@ -37,4 +37,6 @@ export default async function handler(req, res) {
   } else {
     // Handle any other HTTP method
   }
-}
+};
+
+export default connectDb(handler);

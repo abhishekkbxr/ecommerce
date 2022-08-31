@@ -4,6 +4,7 @@ import mongoose from "mongoose"
 import { useRouter } from 'next/router.js'
 
 function Orders() {
+    const router = useRouter()
     useEffect(() => {
         if (!localStorage.getItem("token")) {
             router.push('/')

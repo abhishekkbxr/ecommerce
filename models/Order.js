@@ -2,10 +2,9 @@ import mongoose from "mongoose";
 
 const OrderSchema = new mongoose.Schema({
     email: { type: String, required: true },
-    products: [{
-        productId: { type: String },
-        quantity: { type: Number, default: 1 }
-    }],
+    orderId: { type: String, required: true },
+    paymentInfo: { type: String, default: "" },
+    products:   {type:Object , required:true},
     address: { type: String, required: true },
     amount: { type: Number, required: true },
     status: { type: String, default: "Panding", required: true },

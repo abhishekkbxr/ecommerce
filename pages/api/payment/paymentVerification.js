@@ -1,8 +1,8 @@
 import Payment from "../../../models/Payment";
-
+import connectDb from "../../../middleware/mongoose";
 const crypto = require("crypto");
 
-export default async function handler(req, res) {
+const handler = async (req, res) => {
 
     if (req.method === "POST") {
         // verify payment 
@@ -29,8 +29,10 @@ export default async function handler(req, res) {
             })
         }
 
+      
 
 
 
     }
 }
+export default connectDb(handler);

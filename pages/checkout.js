@@ -3,51 +3,43 @@ import Link from "next/link";
 import { AiFillPlusCircle, AiFillMinusCircle } from "react-icons/ai";
 import { BsFillBagCheckFill } from "react-icons/bs";
 
-function Checkout({
-  logout,
-  cart,
-  addToCart,
-  removeFromCart,
-  subTotal,
-}) {
+function Checkout({ logout, cart, addToCart, removeFromCart, subTotal }) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
+  const [pincode, setPincode] = useState("");
+  const [disabled, setDisabled] = useState(true);
+  const [state, setState] = useState("");
+  const [city, setCity] = useState("");
 
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
-  const [phone, setPhone] = useState("")
-  const [address, setAddress] = useState("")
-  const [pincode, setPincode] = useState("")
-  const [disabled, setDisabled] = useState(true)
-  const [state, setState] = useState("")
-  const [city, setCity] = useState("")
-
+  // const id = setOrderId(b.id)
 
   const handelChange = (e) => {
     if (e.target.name == "name") {
-      setName(e.target.value)
-    }
-    else if (e.target.name == "email") {
-      setEmail(e.target.value)
-    }
-    else if (e.target.name == "phone") {
-      setPhone(e.target.value)
-    }
-    else if (e.target.name == "address") {
-      setAddress(e.target.value)
-    }
-    else if (e.target.name == "pincode") {
-      setPincode(e.target.value)
+      setName(e.target.value);
+    } else if (e.target.name == "email") {
+      setEmail(e.target.value);
+    } else if (e.target.name == "phone") {
+      setPhone(e.target.value);
+    } else if (e.target.name == "address") {
+      setAddress(e.target.value);
+    } else if (e.target.name == "pincode") {
+      setPincode(e.target.value);
     }
 
-    if (name.length > 3 && email.length > 3 && phone.length > 3 && address.length > 3 && pincode.length > 3) {
-      setDisabled(false)
+    if (
+      name.length > 3 &&
+      email.length > 3 &&
+      phone.length > 3 &&
+      address.length > 3 &&
+      pincode.length > 3
+    ) {
+      setDisabled(false);
     }
+  };
 
-
-
-  }
-
-
-  // payment integration with razorpay 
+  // payment integration with razorpay
   const makePayment = async () => {
     console.log("here...");
     const res = await initializeRazorpay();
@@ -67,6 +59,7 @@ function Checkout({
       body: JSON.stringify(value),
     });
     let b = await data.json();
+    console.log("the value is ", b);
 
     var options = {
       key: process.env.RAZORPAY_KEY, // Enter the Key ID generated from the Dashboard
@@ -85,6 +78,28 @@ function Checkout({
 
     const paymentObject = new window.Razorpay(options);
     paymentObject.open();
+
+    // create order after payment verfication
+
+    const OrderData = {
+      cart,
+      subTotal,
+      orderId: b.id,
+      email,
+      name,
+      phone,
+      address,
+      pincode,
+    };
+    const p = await fetch(`/api/payment/order`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(OrderData),
+    });
+    let order = await p.json();
+    console.log("the value is ", order);
   };
   const initializeRazorpay = () => {
     return new Promise((resolve) => {
@@ -102,6 +117,7 @@ function Checkout({
       document.body.appendChild(script);
     });
   };
+
   return (
     <div className="container px-3 sm:m-auto">
       <h1 className="font-bold text-3xl text-center my-8"> Checkout </h1>
@@ -189,7 +205,6 @@ function Checkout({
             />
           </div>
         </div>
-
       </div>
       <div className="mx-auto flex ">
         <div className="px-2 w-1/2">
@@ -223,9 +238,6 @@ function Checkout({
             />
           </div>
         </div>
-
-
-
       </div>
 
       <h2 className="font-semibold text-xl my-3">2. Review Cart-items</h2>
