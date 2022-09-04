@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { AiFillPlusCircle, AiFillMinusCircle } from "react-icons/ai";
 import { BsFillBagCheckFill } from "react-icons/bs";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-function Checkout({ logout, cart, addToCart, removeFromCart, subTotal }) {
+function Checkout({ logout, cart, addToCart, removeFromCart, subTotal, clearCart }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -12,10 +14,23 @@ function Checkout({ logout, cart, addToCart, removeFromCart, subTotal }) {
   const [disabled, setDisabled] = useState(true);
   const [state, setState] = useState("");
   const [city, setCity] = useState("");
+  const [user, setUser] = useState({ value: null });
 
-  // const id = setOrderId(b.id)
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("myuser"))
 
-  const handelChange = (e) => {
+    if (user && user.token) {
+      setUser(user);
+      setEmail(user.email)
+    }
+
+
+  }, [])
+
+
+
+
+  const handelChange = async (e) => {
     if (e.target.name == "name") {
       setName(e.target.value);
     } else if (e.target.name == "email") {
@@ -26,6 +41,20 @@ function Checkout({ logout, cart, addToCart, removeFromCart, subTotal }) {
       setAddress(e.target.value);
     } else if (e.target.name == "pincode") {
       setPincode(e.target.value);
+      if (e.target.value.length == 6) {
+        let pins = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/pincode`);
+        let pinJson = await pins.json();
+        if (Object.keys(pinJson).includes(e.target.value)) {
+          setCity(pinJson[e.target.value][0]);
+          setState(pinJson[e.target.value][1]);
+        } else {
+          setCity("");
+          setState("");
+        }
+      } else {
+        setCity("");
+        setState("");
+      }
     }
 
     if (
@@ -41,7 +70,6 @@ function Checkout({ logout, cart, addToCart, removeFromCart, subTotal }) {
 
   // payment integration with razorpay
   const makePayment = async () => {
-    console.log("here...");
     const res = await initializeRazorpay();
 
     if (!res) {
@@ -50,7 +78,15 @@ function Checkout({ logout, cart, addToCart, removeFromCart, subTotal }) {
     }
 
     // Make API call to the serverless API
-    const value = { cart, subTotal };
+    const value = {
+      cart,
+      subTotal,
+      email,
+      name,
+      phone,
+      address,
+      pincode,
+    };
     const data = await fetch(`/api/payment/razorpay`, {
       method: "POST",
       headers: {
@@ -58,8 +94,23 @@ function Checkout({ logout, cart, addToCart, removeFromCart, subTotal }) {
       },
       body: JSON.stringify(value),
     });
+
     let b = await data.json();
-    console.log("the value is ", b);
+    if (b.success !== true) {
+      if (b.cartClear) {
+        clearCart()
+      }
+
+      toast.error(b.error, {
+        position: "top-left",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
 
     var options = {
       key: process.env.RAZORPAY_KEY, // Enter the Key ID generated from the Dashboard
@@ -76,8 +127,11 @@ function Checkout({ logout, cart, addToCart, removeFromCart, subTotal }) {
       },
     };
 
+
     const paymentObject = new window.Razorpay(options);
     paymentObject.open();
+
+
 
     // create order after payment verfication
 
@@ -99,13 +153,13 @@ function Checkout({ logout, cart, addToCart, removeFromCart, subTotal }) {
       body: JSON.stringify(OrderData),
     });
     let order = await p.json();
-    console.log("the value is ", order);
   };
   const initializeRazorpay = () => {
     return new Promise((resolve) => {
       const script = document.createElement("script");
       script.src = "https://checkout.razorpay.com/v1/checkout.js";
       // document.body.appendChild(script);
+
 
       script.onload = () => {
         resolve(true);
@@ -120,6 +174,17 @@ function Checkout({ logout, cart, addToCart, removeFromCart, subTotal }) {
 
   return (
     <div className="container px-3 sm:m-auto">
+      <ToastContainer
+        position="top-left"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
       <h1 className="font-bold text-3xl text-center my-8"> Checkout </h1>
       <h2 className="font-semibold text-xl my-3">1. Delivery Details</h2>
       <div className="mx-auto flex ">
@@ -143,14 +208,23 @@ function Checkout({ logout, cart, addToCart, removeFromCart, subTotal }) {
             <label htmlFor="email" className="leading-7 text-sm text-gray-600">
               Email
             </label>
-            <input
+            {user && user.token ? (<input
+
+              value={user.email}
+              type="email"
+              id="email"
+              name="email"
+              className="w-full opacity-60 bg-white rounded border border-gray-300 focus:border-pink-500 focus:ring-2 focus:ring-pink-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+              readOnly={true}
+            />) : <input
               onChange={handelChange}
               value={email}
               type="email"
               id="email"
               name="email"
               className="w-full bg-white rounded border border-gray-300 focus:border-pink-500 focus:ring-2 focus:ring-pink-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
-            />
+            />}
+
           </div>
         </div>
       </div>
@@ -170,6 +244,7 @@ function Checkout({ logout, cart, addToCart, removeFromCart, subTotal }) {
           ></textarea>
         </div>
       </div>
+
       <div className="mx-auto flex ">
         <div className="px-2 w-1/2">
           <div className=" mb-4">
@@ -178,6 +253,7 @@ function Checkout({ logout, cart, addToCart, removeFromCart, subTotal }) {
             </label>
             <input
               onChange={handelChange}
+              placeholder="10-Digit phone number"
               value={phone}
               type="phone"
               id="phone"
@@ -210,15 +286,15 @@ function Checkout({ logout, cart, addToCart, removeFromCart, subTotal }) {
         <div className="px-2 w-1/2">
           <div className=" mb-4">
             <label htmlFor="state" className="leading-7 text-sm text-gray-600">
-              State
+              District
             </label>
             <input
-              value={state}
+              onChange={handelChange}
+              value={city}
               type="text"
-              id="state"
-              name="state"
+              id="city"
+              name="city"
               className="w-full bg-white rounded border border-gray-300 focus:border-pink-500 focus:ring-2 focus:ring-pink-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
-              readOnly={true}
             />
           </div>
         </div>
@@ -226,15 +302,15 @@ function Checkout({ logout, cart, addToCart, removeFromCart, subTotal }) {
         <div className="px-2 w-1/2">
           <div className=" mb-4">
             <label htmlFor="city" className="leading-7 text-sm text-gray-600">
-              City
+              State
             </label>
             <input
-              value={city}
+              onChange={handelChange}
+              value={state}
               type="text"
-              id="city"
-              name="city"
+              id="state"
+              name="state"
               className="w-full bg-white rounded border border-gray-300 focus:border-pink-500 focus:ring-2 focus:ring-pink-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
-              readOnly={true}
             />
           </div>
         </div>

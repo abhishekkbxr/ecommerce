@@ -1,4 +1,4 @@
-import {  useRouter } from "next/router";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
@@ -32,9 +32,9 @@ function MyApp({ Component, pageProps }) {
       console.log(error);
       localStorage.clear();
     }
-    let token = localStorage.getItem("token");
-    if (token) {
-      setUser({ value: token });
+    let myuser = JSON.parse(localStorage.getItem("myuser"));
+    if (myuser) {
+      setUser({ value: myuser.token, email: myuser.email });
     }
     setKey(Math.random());
   }, [router.query]);
@@ -43,7 +43,7 @@ function MyApp({ Component, pageProps }) {
     localStorage.setItem("cart", JSON.stringify(myCart));
     let subt = 0;
     let keys = Object.keys(myCart);
-    for (let i = 0; i < keys.length; i++) {
+    for (let i = 0; i < keys.length; i++) { 
       subt += myCart[keys[i]].price * myCart[keys[i]].qty;
     }
     setSubTotal(subt);
@@ -51,6 +51,9 @@ function MyApp({ Component, pageProps }) {
 
   const addToCart = (itemCode, qty, price, name, size, varient) => {
     let newCart = cart;
+    if (Object.keys(cart).length == 0) {
+      setKey(Math.random())
+    }
     if (itemCode in cart) {
       newCart[itemCode].qty = cart[itemCode].qty + qty;
     } else {
@@ -58,7 +61,6 @@ function MyApp({ Component, pageProps }) {
     }
 
     setCart(newCart);
-    // console.log(newCart);
     saveCart(newCart);
   };
 
@@ -81,7 +83,8 @@ function MyApp({ Component, pageProps }) {
   };
 
   const buyNow = (itemCode, qty, price, name, size, varient) => {
-    let newCart = { itemCode: { qty: 1, price, name, size, varient } };
+    let newCart = {}
+    newCart[itemCode] = { qty: 1, price, name, size, varient };
 
     setCart(newCart);
     saveCart(newCart);
@@ -89,7 +92,7 @@ function MyApp({ Component, pageProps }) {
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem("myuser");
     setUser({ value: null });
     setKey(Math.random());
     router.push("/");
@@ -103,7 +106,7 @@ function MyApp({ Component, pageProps }) {
         waitingTime={500}
         onLoaderFinished={() => setProgress(0)}
       />
-      <Navbar
+      {Key && <Navbar
         cart={cart}
         addToCart={addToCart}
         removeFromCart={removeFromCart}
@@ -112,8 +115,9 @@ function MyApp({ Component, pageProps }) {
         Key={Key}
         user={user}
         logout={logout}
-      />
+      />}
       <Component
+        user={user}
         cart={cart}
         addToCart={addToCart}
         removeFromCart={removeFromCart}

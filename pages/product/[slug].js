@@ -1,21 +1,32 @@
 import { useRouter } from "next/router";
-import { useState } from "react";
+import Error from "next/error";
+import { useEffect, useState } from "react";
 import mongoose from "mongoose";
 import Product from "../../models/Product";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const Post = ({ buyNow, addToCart, product, varient }) => {
+const Post = ({ buyNow, addToCart, product, varient, error }) => {
   const router = useRouter();
   const { slug } = router.query;
 
   const [pin, setPin] = useState();
   const [service, setService] = useState();
+  const [color, setColor] = useState();
+  const [size, setSize] = useState();
+
+  useEffect(() => {
+    if (!error) {
+      setColor(product.color)
+      setSize(product.size)
+    }
+  }, [router.query])
+
 
   const checkServieablity = async () => {
     let pins = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/pincode`);
     let pinJson = await pins.json();
-    if (pinJson.includes(parseInt(pin))) {
+    if (Object.keys(pinJson).includes(pin)) {
       setService(true);
       toast.success("Your pincode is serviceable", {
         position: "bottom-center",
@@ -39,19 +50,22 @@ const Post = ({ buyNow, addToCart, product, varient }) => {
       });
     }
   };
+
   const onChangePin = (e) => {
     setPin(e.target.value);
     console.log(setPin(e.target.value));
   };
 
-  const [color, setColor] = useState(product.color);
-  const [size, setSize] = useState(product.size);
+
 
   const refreshVarient = (newcolor, newsize) => {
-    console.log("v is ", varient, newsize, newcolor)
     let url = `${process.env.NEXT_PUBLIC_HOST}/product/${varient[newcolor][newsize]["slug"]}`;
-    window.location = url;
+    router.push(url)
   };
+
+  if (error == 404) {
+    return <Error statusCode={404} />
+  }
 
   return (
     <>
@@ -79,7 +93,7 @@ const Post = ({ buyNow, addToCart, product, varient }) => {
                 MUFTI
               </h2>
               <h1 className="text-gray-900 text-3xl title-font font-medium mb-1">
-              {product.title}({product.size}/{product.color})
+                {product.title}({product.size}/{product.color})
               </h1>
               <div className="flex mb-4">
                 <span className="flex items-center">
@@ -211,15 +225,15 @@ const Post = ({ buyNow, addToCart, product, varient }) => {
                     <select
                       value={size}
                       onChange={(e) => {
-                        refreshVarient(color ,e.target.value);
+                        refreshVarient(color, e.target.value);
                       }}
                       className="rounded border appearance-none border-gray-300 py-2 focus:outline-none focus:ring-2 focus:ring-pink-200 focus:border-pink-500 text-base pl-3 pr-10"
                     >
-                      {Object.keys(varient[color]).includes("S") && <option value={"S"}>S</option>}
-                      {Object.keys(varient[color]).includes("M") && <option value={"M"}>M</option>}
-                      {Object.keys(varient[color]).includes("L") && <option value={"L"}>L</option>}
-                      {Object.keys(varient[color]).includes("XL") && <option value={"XL"}>XL</option>}
-                      {Object.keys(varient[color]).includes("XXL") && <option value={"XXL"}>XXL</option>}
+                      {color && Object.keys(varient[color]).includes("S") && <option value={"S"}>S</option>}
+                      {color && Object.keys(varient[color]).includes("M") && <option value={"M"}>M</option>}
+                      {color && Object.keys(varient[color]).includes("L") && <option value={"L"}>L</option>}
+                      {color && Object.keys(varient[color]).includes("XL") && <option value={"XL"}>XL</option>}
+                      {color && Object.keys(varient[color]).includes("XXL") && <option value={"XXL"}>XXL</option>}
                     </select>
                     <span className="absolute right-0 top-0 h-full w-10 text-center text-gray-600 pointer-events-none flex items-center justify-center">
                       <svg
@@ -238,22 +252,28 @@ const Post = ({ buyNow, addToCart, product, varient }) => {
                 </div>
               </div>
               <div className="flex">
-                <span className="title-font font-medium text-2xl text-gray-900">
-                  ₹458.00
-                </span>
+                {product.availableQty <= 0 && <span className="title-font  font-medium text-xl text-gray-900">
+                  Out of stock !
+                </span>}
+                {product.availableQty > 0 && <span className="title-font font-medium text-2xl text-gray-900">
+                  ₹{product.price}
+                </span>}
+
                 <button
+                  disabled={product.availableQty <= 0}
                   onClick={() => {
-                    addToCart(slug, 1, 458, product.title, size, color);
+                    addToCart(slug, 1, product.price, product.title, size, color);
                   }}
-                  className="flex ml-8 text-white bg-pink-500 border-0 py-2 px-2 md:px-6 focus:outline-none hover:bg-pink-600 rounded"
+                  className="flex ml-8 disabled:bg-pink-300 text-white bg-pink-500 border-0 py-2 px-2 md:px-6 focus:outline-none hover:bg-pink-600 rounded"
                 >
                   Add to cart
                 </button>
                 <button
+                  disabled={product.availableQty <= 0}
                   onClick={() => {
-                    buyNow(slug, 1, 458, product.title, size, color);
+                    buyNow(slug, 1, product.price, product.title, size, color);
                   }}
-                  className="flex ml-2 text-white bg-pink-500 border-0 py-2 px-2 md:px-6 focus:outline-none hover:bg-pink-600 rounded"
+                  className="flex ml-2 disabled:bg-pink-300 text-white bg-pink-500 border-0 py-2 px-2 md:px-6 focus:outline-none hover:bg-pink-600 rounded"
                 >
                   Buy now
                 </button>
@@ -305,12 +325,20 @@ const Post = ({ buyNow, addToCart, product, varient }) => {
 };
 
 export async function getServerSideProps(context) {
+  let error = null;
   if (!mongoose.connections[0].readyState) {
     mongoose.connect(process.env.MONGO_URI, () => {
       console.log("connected");
     });
   }
   let product = await Product.findOne({ slug: context.query.slug })
+  if (product == null) {
+    return {
+      props: {
+        error: 404,
+      }
+    }
+  }
   let varient = await Product.find({ title: product.title })
 
   let colorSizeSlug = {}
@@ -326,6 +354,7 @@ export async function getServerSideProps(context) {
 
   return {
     props: {
+      error: error,
       product: JSON.parse(JSON.stringify(product)),
       varient: JSON.parse(JSON.stringify(colorSizeSlug)),
     }, // will be passed to the page component as props

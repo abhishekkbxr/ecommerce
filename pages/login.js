@@ -9,11 +9,11 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  useEffect(()=>{
-    if(localStorage.getItem("token")){
+  useEffect(() => {
+    if (localStorage.getItem("myuser")) {
       router.push('/')
     }
-  },[])
+  }, [])
 
 
   const handleChange = (e) => {
@@ -41,7 +41,7 @@ function Login() {
     setEmail("");
     setPassword("");
     if (response.success) {
-      localStorage.setItem("token", response.token)
+      localStorage.setItem("myuser", JSON.stringify({ token: response.token, email: response.email }))
       toast.success("You are succesfully logged in ", {
         position: "top-center",
         autoClose: 700,
@@ -139,7 +139,7 @@ function Login() {
           </div>
 
           <div className="flex items-center justify-between">
-           
+
 
             <div className="text-sm">
               <Link href={"/forgot"}>
