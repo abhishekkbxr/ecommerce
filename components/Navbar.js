@@ -33,7 +33,7 @@ function Navbar({
     // if (Object.keys(cart).length !== 0) {
     //   setSidebar(true)
     // }
-    let exempted = ['/checkout', '/order', '/orders', '/myaccount']
+    let exempted = ['/checkout', '/order', '/orders', '/myaccount' , '/login' , '/signup' , '/forgot' , '/[slug]']
     if (exempted.includes(router.pathname)) {
       setSidebar(false)
     }
@@ -78,7 +78,7 @@ function Navbar({
 
       <div className="cart absolute right-0 top-3 mx-5 cursor-pointer flex space-x-2">
         <span onMouseOver={() => { setDropdown(true) }} onMouseLeave={() => { setDropdown(false) }}>
-          {Dropdown && <div className="absolute right-9 bg-white shadow-lg border top-9 rounded-md p-2 w-32" onMouseOver={() => { setDropdown(true) }} onMouseLeave={() => { setDropdown(false) }}>
+          {Dropdown && <div className="absolute right-9 bg-white shadow-lg border top-6 rounded-md p-2 w-32" onMouseOver={() => { setDropdown(true) }} onMouseLeave={() => { setDropdown(false) }}>
             <ul>
               <Link href={"/myaccount"}><a><li className="py-1 hover:text-pink-700 text-sm font-bold ">My Account</li></a></Link>
               <Link href={"/orders"}><a><li className="py-1 hover:text-pink-700 text-sm font-bold ">Orders</li></a></Link>

@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import Product from "../../models/Product";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Head from "next/head";
 
 const Post = ({ buyNow, addToCart, product, varient, error }) => {
   const router = useRouter();
@@ -69,7 +70,12 @@ const Post = ({ buyNow, addToCart, product, varient, error }) => {
 
   return (
     <>
-      <section className="text-gray-600 body-font overflow-hidden">
+      <section className="text-gray-600 body-font overflow-hidden min-h-screen">
+        <Head>
+          <title>Details</title>
+          <meta name="description" content="Ecommerce - Buy everything " />
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
         <ToastContainer
           position="bottom-center"
           autoClose={2000}

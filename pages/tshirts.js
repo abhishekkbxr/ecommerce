@@ -14,7 +14,7 @@ function Tshirts({ products }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <section className="text-gray-600 body-font items-center justify-center">
+      <section className="text-gray-600 body-font items-center justify-center min-h-screen">
         <div className="container px-5 py-24 mx-auto ">
           <div className="flex flex-wrap -m-4 justify-center ">
 

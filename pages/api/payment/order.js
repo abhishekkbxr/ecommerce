@@ -9,8 +9,12 @@ const handler = async (req, res) => {
       name: req.body.name,
       email: req.body.email,
       orderId: req.body.orderId,
-      address: req.body.address,
       amount: req.body.subTotal,
+      address: req.body.address,
+      pincode: req.body.pincode,
+      state: req.body.state,
+      city: req.body.city,
+      phone: req.body.phone,
       products: req.body.cart,
     });
 

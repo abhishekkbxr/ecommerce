@@ -17,7 +17,7 @@ function MyApp({ Component, pageProps }) {
 
   useEffect(() => {
     router.events.on("routeChangeStart", () => {
-      setProgress(20);
+      setProgress(40);
     });
     router.events.on("routeChangeComplete", () => {
       setProgress(100);

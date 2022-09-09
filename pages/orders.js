@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router.js";
 import Link from "next/link";
+import Head from "next/head";
 
 function Orders() {
     const router = useRouter();
@@ -32,7 +33,12 @@ function Orders() {
 
     return (
         <div>
-            <div className="container mx-auto my-3  ">
+             <Head>
+      <title>Orders</title>
+      <meta name="description" content="Ecommerce - Buy everything " />
+      <link rel="icon" href="/favicon.ico" />
+    </Head>
+            <div className="container mx-auto my-3 min-h-screen ">
                 <h1 className="text-xl font-semibold p-3 text-center ">My orders</h1>
                 <div className="items">
                     <div className="flex flex-col">

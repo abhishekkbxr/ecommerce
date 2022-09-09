@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect } from "react";
+import Head from "next/head";
 
 function Forgot() {
   const router = useRouter()
@@ -11,7 +12,12 @@ function Forgot() {
   },[])
 
   return (
-    <div className="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-start justify-center py-24 px-4 sm:px-6 lg:px-8">
+       <Head>
+      <title>Forgot</title>
+      <meta name="description" content="Ecommerce - Buy everything " />
+      <link rel="icon" href="/favicon.ico" />
+    </Head>
       <div className="max-w-md w-full space-y-8">
         <div>
           <img
